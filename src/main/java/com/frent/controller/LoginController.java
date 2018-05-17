@@ -140,8 +140,8 @@ public class LoginController {
 					if (doInsert) {
 						User id = userService.doGetUserId(user.getUser_email());
 						if (id != null) {
-							user.setUser_id(id.getUser_id());
-							status.setData(user);
+							LOGGER.debug(id);
+							status.setData(id);
 							status.setCode(HttpStatus.OK.value());
 						} else {
 							status.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());

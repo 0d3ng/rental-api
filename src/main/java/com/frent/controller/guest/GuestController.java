@@ -405,7 +405,7 @@ public class GuestController {
 		LOGGER.info(pinjam);
 		Message<Pesanan> status = new Message<>();
 		status.setCode(HttpStatus.OK.value());
-		status.setLink(uriComponentsBuilder.path("/service/guest/transaksi/insertPinjam").build().toUriString());
+		status.setLink(uriComponentsBuilder.path("/service/guest/insertPinjam").build().toUriString());
 		try {
 			if (true) {
 				TransaksiPinjam transaksiPinjam = new TransaksiPinjam();
@@ -415,20 +415,16 @@ public class GuestController {
 				profile.setUser_phone(pinjam.getNoHp());
 				profile.setUser_email(pinjam.getEmail());
 				profile.setUser_frontname(pinjam.getNamaLengkap());
-				boolean insert = userService.doInsert(profile);
-				if (!insert) {
-					status.setCode(HttpStatus.NOT_MODIFIED.value());
-					status.setMessage("Fail");
-					status.setDeveloperMessage("Insert user fail");
-					return status;
-				}
 				User user = userService.doGetUserId(pinjam.getEmail());
 				if (user == null) {
-					status.setCode(HttpStatus.NOT_FOUND.value());
-					status.setMessage("Fail");
-					status.setDeveloperMessage("User not found");
-					return status;
-				}
+					boolean insert = userService.doInsert(profile);
+					if (!insert) {
+						status.setCode(HttpStatus.NOT_MODIFIED.value());
+						status.setMessage("Fail");
+						status.setDeveloperMessage("Insert user fail");
+						return status;
+					}
+				}		
 				VendorLokasi vendorLokasi = new VendorLokasi();
 				vendorLokasi.setVendorloc_id(pinjam.getVendorLocationId());
 
@@ -461,7 +457,6 @@ public class GuestController {
 
 				boolean doInsert = transaksiPinjamService.insert(transaksiPinjam);
 				if (doInsert) {
-					User doRequestProfile = userService.doRequestProfile("" + pinjam.getUserId());
 					HashMap<String, String> settings = settingService.settings();
 					EmailTemplate emailTemplate = new EmailTemplate();
 					Map<String, String> replacements = new HashMap<String, String>();
@@ -470,12 +465,12 @@ public class GuestController {
 					replacements.put("vendor", pesan.getVendor());
 					replacements.put("order_id", transaksiPinjam.getTrxpinjam_id());
 					replacements.put("date", transaksiPinjam.getTrxpinjam_date());
-					replacements.put("nama", doRequestProfile.getUser_frontname());
-					replacements.put("idcard", doRequestProfile.getUser_idcard() == null ? "0000000000000000"
-							: doRequestProfile.getUser_idcard());
+					replacements.put("nama", pinjam.getNamaLengkap());
+					replacements.put("idcard", pinjam.getIdCard() == null ? "0000000000000000"
+							: pinjam.getIdCard());
 					replacements.put("telp",
-							doRequestProfile.getUser_phone() == null ? "-" : doRequestProfile.getUser_phone());
-					replacements.put("email", doRequestProfile.getUser_email());
+							pinjam.getNoHp() == null ? "-" : pinjam.getNoHp());
+					replacements.put("email", pinjam.getEmail());
 					replacements.put("nama_unit", pesan.getUnit());
 					replacements.put("tanggal_mulai", transaksiPinjam.getTrxpinjam_tanggalmulai());
 					replacements.put("tanggal_selesai", transaksiPinjam.getTrxpinjam_tanggalselesai());
@@ -504,7 +499,7 @@ public class GuestController {
 									+ "/assets/img/not_ok.png\" style=\"width:15px;\"/> Belum konfirmasi bayar</em>");
 					emailTemplate.setTemplate(settings.get("template_email_sewa"));
 					SimpleMailMessage message = new SimpleMailMessage();
-					message.setTo(doRequestProfile.getUser_email());
+					message.setTo(pinjam.getEmail());
 					message.setCc(settings.get("email_cs"));
 					message.setSubject("Informasi frent.id");
 					emailService.sendSimpleMessageUsingTemplate(message, emailTemplate.getTemplate(replacements), true);

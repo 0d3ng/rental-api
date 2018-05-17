@@ -252,6 +252,7 @@ public class User implements Serializable{
 			return false;
 		return true;
 	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -259,10 +260,11 @@ public class User implements Serializable{
 	public String toString() {
 		return "User [user_id=" + user_id + ", user_email=" + user_email + ", user_password=" + user_password
 				+ ", user_idcard=" + user_idcard + ", user_frontname=" + user_frontname + ", user_lastname="
-				+ user_lastname + ", user_photo=" + user_photo + ", user_jk=" + user_jk + ", user_tanggallahir="
-				+ user_tanggallahir + ", user_phone=" + user_phone + ", user_address=" + user_address + ", user_active="
-				+ user_active + ", user_groupid=" + user_groupid + ", user_verification=" + user_verification
-				+ ", user_apps=" + user_apps + ", user_token=" + user_token + "]";
+				+ user_lastname + ", user_photo=" + user_photo + ", user_photo_idcard=" + user_photo_idcard
+				+ ", user_jk=" + user_jk + ", user_tanggallahir=" + user_tanggallahir + ", user_phone=" + user_phone
+				+ ", user_address=" + user_address + ", user_active=" + user_active + ", user_groupid=" + user_groupid
+				+ ", user_verification=" + user_verification + ", user_apps=" + user_apps + ", user_token=" + user_token
+				+ ", user_type=" + user_type + "]";
 	}
 	/**
 	 * @return the user_type
